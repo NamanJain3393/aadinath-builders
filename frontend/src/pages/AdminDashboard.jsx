@@ -127,6 +127,7 @@ const AdminDashboard = () => {
                                     <DialogTitle>{editingProperty ? 'Edit Property' : 'Add New Property'}</DialogTitle>
                                 </DialogHeader>
 
+                                {/* ... (Tab buttons and Form remain same, just ensuring we don't break them) ... */}
                                 <div className="flex border-b mb-4 space-x-4">
                                     {['Overview', 'Specs', 'Features', 'Media'].map((tab) => (
                                         <button
@@ -142,7 +143,6 @@ const AdminDashboard = () => {
                                 </div>
 
                                 <form onSubmit={handleSaveProperty} className="space-y-6 py-2">
-
                                     {activeFormTab === 'overview' && (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
@@ -308,28 +308,42 @@ const AdminDashboard = () => {
                         </Dialog>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {properties.map(property => (
-                            <div key={property._id} className="bg-white border rounded-lg p-4 shadow-sm relative">
-                                <div className="absolute top-2 right-2 flex gap-2">
-                                    <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => openEditModal(property)}>
-                                        <Edit className="h-4 w-4" />
-                                    </Button>
-                                    <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => handleDeleteProperty(property._id)}>
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
+                    {/* Properties Grid */}
+                    {properties.length === 0 ? (
+                        <div className="text-center py-20 bg-white rounded-lg border border-dashed">
+                            <p className="text-slate-500 mb-2">No properties found.</p>
+                            <Button variant="outline" onClick={() => setIsDialogOpen(true)}>Add Your First Property</Button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {properties.map(property => (
+                                <div key={property._id} className="bg-white border rounded-lg p-4 shadow-sm relative transition-shadow hover:shadow-md">
+                                    <div className="absolute top-2 right-2 flex gap-2">
+                                        <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => openEditModal(property)}>
+                                            <Edit className="h-4 w-4" />
+                                        </Button>
+                                        <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => handleDeleteProperty(property._id)}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                    <div className="pr-20">
+                                        <h3 className="font-bold truncate" title={property.title}>{property.title}</h3>
+                                        <p className="text-sm text-slate-500 truncate">{property.location}</p>
+                                    </div>
+                                    <div className="mt-4 flex justify-between items-center">
+                                        <span className="font-bold text-lg">₹ {property.price ? property.price.toLocaleString('en-IN') : '0'}</span>
+                                        <span className={`text-xs px-2 py-1 rounded font-medium ${property.status === 'Sold' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                            {property.status}
+                                        </span>
+                                    </div>
+                                    <div className="mt-4 pt-4 border-t flex justify-between text-xs text-slate-500">
+                                        <span>{property.bedrooms ? `${property.bedrooms} BHK` : 'Studio'}</span>
+                                        <span>{property.area}</span>
+                                    </div>
                                 </div>
-                                <h3 className="font-bold pr-20">{property.title}</h3>
-                                <p className="text-sm text-slate-500">{property.location}</p>
-                                <div className="mt-2 flex justify-between items-center">
-                                    <span className="font-bold">₹ {property.price.toLocaleString('en-IN')}</span>
-                                    <span className={`text-xs px-2 py-1 rounded ${property.status === 'Sold' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}`}>
-                                        {property.status}
-                                    </span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             )}
 
