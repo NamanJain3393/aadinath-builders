@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const path = require('path');
 
 dotenv.config();
 
@@ -15,21 +16,25 @@ app.use(express.json());
 // Database Connection
 connectDB();
 
+// Health check (VERY important for Render)
+app.get('/health', (req, res) => {
+    res.json({ status: "Aadinath Builders API running" });
+});
+
 // Routes
 app.use('/api/auth', require('./routes/userRoutes'));
 app.use('/api/properties', require('./routes/propertyRoutes'));
 app.use('/api/inquiries', require('./routes/inquiryRoutes'));
 app.use('/api/upload', require('./routes/uploadRoutes'));
 
-const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 
-// Serve frontend
+// Serve frontend (only if deployed together)
 if (process.env.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
     app.get('/', (req, res) => {
-        res.sendFile(path.resolve(__dirname, '../', 'frontend', 'dist', 'index.html'));
+        res.sendFile(path.resolve(__dirname, '../frontend/dist/index.html'));
     });
 } else {
     app.get('/', (req, res) => {
