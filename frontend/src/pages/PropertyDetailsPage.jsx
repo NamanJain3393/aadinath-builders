@@ -180,12 +180,13 @@ const PropertyDetailsPage = () => {
                                                 allowFullScreen
                                             ></iframe>
                                         ) : (
-                                            <div className="flex items-center justify-center h-full text-white">
-                                                <a href={property.videoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
-                                                    <Maximize className="h-6 w-6" />
-                                                    View 360° / Video Tour
-                                                </a>
-                                            </div>
+                                            <video
+                                                controls
+                                                className="w-full h-full object-contain bg-black"
+                                                src={property.videoUrl}
+                                            >
+                                                Your browser does not support the video tag.
+                                            </video>
                                         )}
                                     </div>
                                 </div>

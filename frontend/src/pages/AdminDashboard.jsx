@@ -498,6 +498,7 @@ const AdminDashboard = () => {
                                                         <Input
                                                             type="file"
                                                             id="image-file"
+                                                            accept="image/*"
                                                             onChange={uploadFileHandler}
                                                             className="cursor-pointer"
                                                         />
