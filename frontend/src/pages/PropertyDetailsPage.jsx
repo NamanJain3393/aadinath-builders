@@ -68,42 +68,128 @@ const PropertyDetailsPage = () => {
                     </div>
 
                     <div>
-                        <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <h1 className="text-3xl font-bold mb-2">{property.title}</h1>
-                                <div className="flex items-center text-slate-500 gap-1">
-                                    <MapPin className="h-4 w-4" />
-                                    {property.location}
+                        <div>
+                            <div className="flex flex-col md:flex-row justify-between items-start mb-6 gap-4">
+                                <div>
+                                    <h1 className="text-3xl font-bold mb-2 text-slate-900">{property.title}</h1>
+                                    <div className="flex items-center text-slate-500 gap-1 mb-1">
+                                        <MapPin className="h-4 w-4" />
+                                        {property.location}
+                                    </div>
+                                    {property.project && (
+                                        <div className="text-sm font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded w-fit mt-2">
+                                            Project: {property.project}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="text-left md:text-right">
+                                    <div className="text-3xl font-bold text-slate-900">₹ {property.price.toLocaleString('en-IN')}</div>
+                                    <div className="flex items-center gap-2 mt-1 md:justify-end">
+                                        <span className={`text-xs px-2 py-1 rounded font-medium ${property.status === 'Sold' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                                            {property.status}
+                                        </span>
+                                        <span className="text-xs px-2 py-1 rounded bg-slate-100 text-slate-700 font-medium">{property.propertyAge}</span>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="text-right">
-                                <div className="text-3xl font-bold text-primary">₹ {property.price.toLocaleString('en-IN')}</div>
-                                <div className="text-sm text-slate-500">{property.status}</div>
-                            </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-lg border mb-6">
-                            <div>
-                                <div className="text-slate-500 text-xs uppercase tracking-wider">Type</div>
-                                <div className="font-semibold">{property.type}</div>
+                            {/* Quick Overview */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 bg-white rounded-xl border shadow-sm mb-8">
+                                <div>
+                                    <div className="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Bedrooms</div>
+                                    <div className="font-bold text-slate-900">{property.bedrooms ? `${property.bedrooms} BHK` : 'N/A'}</div>
+                                </div>
+                                <div>
+                                    <div className="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Super Area</div>
+                                    <div className="font-bold text-slate-900">{property.superArea || property.area || 'N/A'}</div>
+                                </div>
+                                <div>
+                                    <div className="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Type</div>
+                                    <div className="font-bold text-slate-900">{property.type}</div>
+                                </div>
+                                <div>
+                                    <div className="text-slate-400 text-xs uppercase tracking-wider font-semibold mb-1">Furnishing</div>
+                                    <div className="font-bold text-slate-900">{property.furnishing}</div>
+                                </div>
                             </div>
-                            <div>
-                                <div className="text-slate-500 text-xs uppercase tracking-wider">Area</div>
-                                <div className="font-semibold">{property.area}</div>
-                            </div>
-                            <div>
-                                <div className="text-slate-500 text-xs uppercase tracking-wider">Bedrooms</div>
-                                <div className="font-semibold">N/A</div> {/* Placeholder */}
-                            </div>
-                            <div>
-                                <div className="text-slate-500 text-xs uppercase tracking-wider">Updated</div>
-                                <div className="font-semibold">{new Date(property.updatedAt).toLocaleDateString()}</div>
-                            </div>
-                        </div>
 
-                        <div>
-                            <h2 className="text-xl font-bold mb-3">Description</h2>
-                            <p className="text-slate-600 leading-relaxed whitespace-pre-line">{property.description}</p>
+                            {/* Detailed Specs */}
+                            <div className="mb-8">
+                                <h2 className="text-xl font-bold mb-4 text-slate-900">Property Specifications</h2>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-4 gap-x-8 text-sm">
+                                    <div className="flex justify-between border-b pb-2">
+                                        <span className="text-slate-500">Bathrooms</span>
+                                        <span className="font-medium">{property.bathrooms || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between border-b pb-2">
+                                        <span className="text-slate-500">Balconies</span>
+                                        <span className="font-medium">{property.balconies || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between border-b pb-2">
+                                        <span className="text-slate-500">Floor</span>
+                                        <span className="font-medium">{property.floorNumber || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between border-b pb-2">
+                                        <span className="text-slate-500">Parking</span>
+                                        <span className="font-medium">{property.parking || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between border-b pb-2">
+                                        <span className="text-slate-500">Carpet Area</span>
+                                        <span className="font-medium">{property.carpetArea || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between border-b pb-2">
+                                        <span className="text-slate-500">Facing</span>
+                                        <span className="font-medium">{property.facing || '-'}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Amenities */}
+                            {property.amenities && property.amenities.length > 0 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4 text-slate-900">Amenities</h2>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                                        {property.amenities.map((amenity, index) => (
+                                            <div key={index} className="flex items-center gap-2 p-3 bg-slate-50 rounded-lg">
+                                                <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                                                <span className="text-sm font-medium text-slate-700">{amenity}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="mb-8">
+                                <h2 className="text-xl font-bold mb-3 text-slate-900">Description</h2>
+                                <p className="text-slate-600 leading-relaxed whitespace-pre-line text-sm md:text-base">{property.description}</p>
+                            </div>
+
+                            {/* Video Tour */}
+                            {property.videoUrl && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4 text-slate-900">Video Tour / 360° View</h2>
+                                    <div className="aspect-video bg-black rounded-lg overflow-hidden relative">
+                                        {property.videoUrl.includes('youtube.com') || property.videoUrl.includes('youtu.be') ? (
+                                            <iframe
+                                                width="100%"
+                                                height="100%"
+                                                src={property.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')}
+                                                title="Property Video"
+                                                frameBorder="0"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                allowFullScreen
+                                            ></iframe>
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full text-white">
+                                                <a href={property.videoUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:underline">
+                                                    <Maximize className="h-6 w-6" />
+                                                    View 360° / Video Tour
+                                                </a>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -50,16 +50,16 @@ const getPropertyById = async (req, res) => {
 // @access  Private/Admin
 const createProperty = async (req, res) => {
     try {
-        const { title, price, location, type, area, description, images } = req.body;
+        const {
+            title, price, location, type, area, description, images,
+            bedrooms, bathrooms, balconies, parking, furnishing, floorNumber,
+            carpetArea, superArea, propertyAge, facing, project, amenities
+        } = req.body;
 
         const property = new Property({
-            title,
-            price,
-            location,
-            type,
-            area,
-            description,
-            images,
+            title, price, location, type, area, description, images,
+            bedrooms, bathrooms, balconies, parking, furnishing, floorNumber,
+            carpetArea, superArea, propertyAge, facing, project, amenities
         });
 
         const createdProperty = await property.save();
@@ -74,12 +74,17 @@ const createProperty = async (req, res) => {
 // @access  Private/Admin
 const updateProperty = async (req, res) => {
     try {
-        const { title, price, location, type, area, description, images, status } = req.body;
+        const {
+            title, price, location, type, area, description, images, status,
+            bedrooms, bathrooms, balconies, parking, furnishing, floorNumber,
+            carpetArea, superArea, propertyAge, facing, project, amenities, videoUrl
+        } = req.body;
 
         const property = await Property.findById(req.params.id);
 
         if (property) {
             property.title = title || property.title;
+            // ... (keep existing updates) ... 
             property.price = price || property.price;
             property.location = location || property.location;
             property.type = type || property.type;
@@ -87,6 +92,21 @@ const updateProperty = async (req, res) => {
             property.description = description || property.description;
             property.images = images || property.images;
             property.status = status || property.status;
+
+            // Updated fields
+            property.bedrooms = bedrooms !== undefined ? bedrooms : property.bedrooms;
+            property.bathrooms = bathrooms !== undefined ? bathrooms : property.bathrooms;
+            property.balconies = balconies !== undefined ? balconies : property.balconies;
+            property.parking = parking || property.parking;
+            property.furnishing = furnishing || property.furnishing;
+            property.floorNumber = floorNumber || property.floorNumber;
+            property.carpetArea = carpetArea || property.carpetArea;
+            property.superArea = superArea || property.superArea;
+            property.propertyAge = propertyAge || property.propertyAge;
+            property.facing = facing || property.facing;
+            property.project = project || property.project;
+            property.amenities = amenities || property.amenities;
+            property.videoUrl = videoUrl || property.videoUrl;
 
             const updatedProperty = await property.save();
             res.json(updatedProperty);
