@@ -197,6 +197,20 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleDeleteProperty = async (id) => {
+        if (window.confirm('Are you sure you want to delete this property?')) {
+            try {
+                const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+                await axios.delete(`/api/properties/${id}`, config);
+                setProperties(properties.filter(property => property._id !== id));
+                toast.success('Property deleted');
+            } catch (error) {
+                console.error(error);
+                toast.error('Failed to delete property');
+            }
+        }
+    };
+
     const amenitiesList = ['Lift', 'Gym', 'Swimming Pool', 'Clubhouse', 'Security', 'Power Backup', 'Park', 'Vastu Compliant', 'Gas Pipeline', 'Intercom'];
 
     return (
