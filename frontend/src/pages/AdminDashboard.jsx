@@ -171,6 +171,31 @@ const AdminDashboard = () => {
         }
     };
 
+    const uploadVideoHandler = async (e) => {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+        setUploading(true);
+
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${userInfo.token}`
+                },
+            };
+
+            const { data } = await axios.post('/api/upload', formData, config);
+            setPropertyForm({ ...propertyForm, videoUrl: data.filePath });
+            setUploading(false);
+            toast.success('Video uploaded successfully');
+        } catch (error) {
+            console.error(error);
+            setUploading(false);
+            toast.error('Video upload failed');
+        }
+    };
+
     const amenitiesList = ['Lift', 'Gym', 'Swimming Pool', 'Clubhouse', 'Security', 'Power Backup', 'Park', 'Vastu Compliant', 'Gas Pipeline', 'Intercom'];
 
     return (
@@ -442,11 +467,22 @@ const AdminDashboard = () => {
                                                 </div>
                                                 <div className="space-y-2">
                                                     <label className="text-xs font-semibold uppercase text-slate-500">Video / 360 View URL</label>
-                                                    <Input
-                                                        placeholder="e.g. YouTube link or 360 tour URL"
-                                                        value={propertyForm.videoUrl}
-                                                        onChange={e => setPropertyForm({ ...propertyForm, videoUrl: e.target.value })}
-                                                    />
+                                                    <div className="space-y-2">
+                                                        <Input
+                                                            placeholder="e.g. YouTube link or 360 tour URL"
+                                                            value={propertyForm.videoUrl}
+                                                            onChange={e => setPropertyForm({ ...propertyForm, videoUrl: e.target.value })}
+                                                        />
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-xs text-slate-400 whitespace-nowrap">Or Upload Video:</span>
+                                                            <Input
+                                                                type="file"
+                                                                accept="video/mp4,video/webm,video/ogg"
+                                                                onChange={uploadVideoHandler}
+                                                                className="cursor-pointer text-xs"
+                                                            />
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div className="space-y-2">
                                                     <label className="text-xs font-semibold uppercase text-slate-500">Images</label>
