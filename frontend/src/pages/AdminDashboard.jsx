@@ -135,6 +135,42 @@ const AdminDashboard = () => {
         }
     };
 
+    const uploadFileHandler = async (e) => {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+        setUploading(true);
+
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    Authorization: `Bearer ${userInfo.token}`
+                },
+            };
+
+            const { data } = await axios.post('/api/upload', formData, config);
+
+            // Append the new image URL to the current list
+            const currentImages = propertyForm.images || '';
+            // If currentImages is empty string, just set data. If not, comma append.
+            // Also handle if it ends with comma
+            let newImages = currentImages.trim();
+            if (newImages && !newImages.endsWith(',')) {
+                newImages += ', ';
+            }
+            newImages += data;
+
+            setPropertyForm({ ...propertyForm, images: newImages });
+            setUploading(false);
+            toast.success('Image uploaded');
+        } catch (error) {
+            console.error(error);
+            setUploading(false);
+            toast.error('Image upload failed');
+        }
+    };
+
     const amenitiesList = ['Lift', 'Gym', 'Swimming Pool', 'Clubhouse', 'Security', 'Power Backup', 'Park', 'Vastu Compliant', 'Gas Pipeline', 'Intercom'];
 
     return (
