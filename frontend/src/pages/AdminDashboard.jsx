@@ -78,6 +78,8 @@ const AdminDashboard = () => {
         const formattedData = {
             ...propertyForm,
             images: typeof propertyForm.images === 'string' ? propertyForm.images.split(',').map(i => i.trim()).filter(Boolean) : propertyForm.images,
+            // Backend requires 'area', fallback to superArea/carpetArea if 'area' is not explicitly set
+            area: propertyForm.area || propertyForm.superArea || propertyForm.carpetArea || 'N/A',
             // Ensure numbers are numbers
             price: Number(propertyForm.price),
             bedrooms: Number(propertyForm.bedrooms) || 0,
