@@ -332,6 +332,17 @@ const AdminDashboard = () => {
                                                     />
                                                     {uploading && <div className="text-sm text-slate-500">Uploading...</div>}
                                                 </div>
+
+                                                {/* Image Previews */}
+                                                {propertyForm.images && propertyForm.images.length > 0 && (
+                                                    <div className="grid grid-cols-4 gap-2 mt-4">
+                                                        {(typeof propertyForm.images === 'string' ? propertyForm.images.split(',') : propertyForm.images).filter(url => url.trim() !== '').map((url, index) => (
+                                                            <div key={index} className="relative aspect-video rounded-md overflow-hidden bg-slate-100 border group">
+                                                                <img src={url.trim()} alt={`Preview ${index}`} className="w-full h-full object-cover" />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     )}
@@ -354,28 +365,44 @@ const AdminDashboard = () => {
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {properties.map(property => (
-                                <div key={property._id} className="bg-white border rounded-lg p-4 shadow-sm relative transition-shadow hover:shadow-md">
-                                    <div className="absolute top-2 right-2 flex gap-2">
-                                        <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => openEditModal(property)}>
-                                            <Edit className="h-4 w-4" />
-                                        </Button>
-                                        <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => handleDeleteProperty(property._id)}>
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
+                                <div key={property._id} className="bg-white border rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+                                    <div className="h-48 bg-slate-200 relative">
+                                        {property.images && property.images.length > 0 ? (
+                                            <img
+                                                src={property.images[0]}
+                                                alt={property.title}
+                                                className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                                            />
+                                        ) : (
+                                            <div className="flex items-center justify-center h-full text-slate-400">No Image</div>
+                                        )}
+                                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <Button size="icon" variant="secondary" className="h-8 w-8 bg-white/90 hover:bg-white" onClick={() => openEditModal(property)}>
+                                                <Edit className="h-4 w-4 text-slate-700" />
+                                            </Button>
+                                            <Button size="icon" variant="destructive" className="h-8 w-8" onClick={() => handleDeleteProperty(property._id)}>
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </div>
+                                        <div className="absolute bottom-2 left-2">
+                                            <span className={`text-xs px-2 py-1 rounded font-medium shadow-sm ${property.status === 'Sold' ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
+                                                {property.status}
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div className="pr-20">
-                                        <h3 className="font-bold truncate" title={property.title}>{property.title}</h3>
-                                        <p className="text-sm text-slate-500 truncate">{property.location}</p>
-                                    </div>
-                                    <div className="mt-4 flex justify-between items-center">
-                                        <span className="font-bold text-lg">₹ {property.price ? property.price.toLocaleString('en-IN') : '0'}</span>
-                                        <span className={`text-xs px-2 py-1 rounded font-medium ${property.status === 'Sold' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
-                                            {property.status}
-                                        </span>
-                                    </div>
-                                    <div className="mt-4 pt-4 border-t flex justify-between text-xs text-slate-500">
-                                        <span>{property.bedrooms ? `${property.bedrooms} BHK` : 'Studio'}</span>
-                                        <span>{property.area}</span>
+                                    <div className="p-4">
+                                        <div className="flex justify-between items-start mb-2">
+                                            <h3 className="font-bold text-lg leading-tight line-clamp-1">{property.title}</h3>
+                                        </div>
+                                        <p className="text-sm text-slate-500 mb-3 flex items-center gap-1 truncate">
+                                            {property.location}
+                                        </p>
+                                        <div className="flex justify-between items-center pt-3 border-t">
+                                            <span className="font-bold text-xl text-slate-900">₹ {property.price ? property.price.toLocaleString('en-IN') : '0'}</span>
+                                            <div className="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-1 rounded">
+                                                {property.bedrooms ? `${property.bedrooms} BHK` : property.type} | {property.area}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
@@ -387,33 +414,81 @@ const AdminDashboard = () => {
             {activeTab === 'inquiries' && (
                 <div>
                     <h2 className="text-2xl font-bold mb-6">Leads & Inquiries</h2>
-                    <div className="bg-white border rounded-lg overflow-hidden shadow-sm">
-                        <table className="w-full text-sm text-left">
-                            <thead className="bg-slate-100 text-slate-600 uppercase">
-                                <tr>
-                                    <th className="px-6 py-3">Date</th>
-                                    <th className="px-6 py-3">Name</th>
-                                    <th className="px-6 py-3">Property</th>
-                                    <th className="px-6 py-3">Contact</th>
-                                    <th className="px-6 py-3">Message</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {inquiries.map(inquiry => (
-                                    <tr key={inquiry._id} className="border-b hover:bg-slate-50">
-                                        <td className="px-6 py-4">{new Date(inquiry.createdAt).toLocaleDateString()}</td>
-                                        <td className="px-6 py-4 font-medium">{inquiry.name}</td>
-                                        <td className="px-6 py-4">{inquiry.propertyId ? inquiry.propertyId.title : 'General Inquiry'}</td>
-                                        <td className="px-6 py-4">
-                                            <div>{inquiry.email}</div>
-                                            <div className="text-slate-500">{inquiry.phone}</div>
-                                        </td>
-                                        <td className="px-6 py-4 max-w-xs truncate" title={inquiry.message}>{inquiry.message}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                        {inquiries.length === 0 && <div className="p-8 text-center text-slate-500">No inquiries found.</div>}
+
+                    <div className="space-y-8">
+                        {/* Property Inquiries */}
+                        <div>
+                            <h3 className="text-lg font-semibold mb-3 text-slate-700">Property Specific Inquiries</h3>
+                            <div className="bg-white border rounded-lg overflow-hidden shadow-sm">
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-slate-100 text-slate-600 uppercase">
+                                        <tr>
+                                            <th className="px-6 py-3">Date</th>
+                                            <th className="px-6 py-3">Name</th>
+                                            <th className="px-6 py-3">Property Interest</th>
+                                            <th className="px-6 py-3">Contact</th>
+                                            <th className="px-6 py-3">Message</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {inquiries.filter(i => i.propertyId).map(inquiry => (
+                                            <tr key={inquiry._id} className="border-b hover:bg-slate-50">
+                                                <td className="px-6 py-4">{new Date(inquiry.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-6 py-4 font-medium">{inquiry.name}</td>
+                                                <td className="px-6 py-4 text-blue-600 font-medium">{inquiry.propertyId?.title || 'Unknown Property'}</td>
+                                                <td className="px-6 py-4">
+                                                    <div>{inquiry.email}</div>
+                                                    <div className="text-slate-500">{inquiry.phone}</div>
+                                                </td>
+                                                <td className="px-6 py-4 max-w-xs truncate" title={inquiry.message}>{inquiry.message}</td>
+                                            </tr>
+                                        ))}
+                                        {inquiries.filter(i => i.propertyId).length === 0 && (
+                                            <tr>
+                                                <td colSpan="5" className="px-6 py-8 text-center text-slate-500">No property inquiries yet.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* General Inquiries */}
+                        <div>
+                            <h3 className="text-lg font-semibold mb-3 text-slate-700">General Contact Inquiries</h3>
+                            <div className="bg-white border rounded-lg overflow-hidden shadow-sm">
+                                <table className="w-full text-sm text-left">
+                                    <thead className="bg-slate-100 text-slate-600 uppercase">
+                                        <tr>
+                                            <th className="px-6 py-3">Date</th>
+                                            <th className="px-6 py-3">Name</th>
+                                            <th className="px-6 py-3">Subject</th>
+                                            <th className="px-6 py-3">Contact</th>
+                                            <th className="px-6 py-3">Message</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {inquiries.filter(i => !i.propertyId).map(inquiry => (
+                                            <tr key={inquiry._id} className="border-b hover:bg-slate-50">
+                                                <td className="px-6 py-4">{new Date(inquiry.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-6 py-4 font-medium">{inquiry.name}</td>
+                                                <td className="px-6 py-4 text-slate-500 italic">General Contact</td>
+                                                <td className="px-6 py-4">
+                                                    <div>{inquiry.email}</div>
+                                                    <div className="text-slate-500">{inquiry.phone}</div>
+                                                </td>
+                                                <td className="px-6 py-4 max-w-xs truncate" title={inquiry.message}>{inquiry.message}</td>
+                                            </tr>
+                                        ))}
+                                        {inquiries.filter(i => !i.propertyId).length === 0 && (
+                                            <tr>
+                                                <td colSpan="5" className="px-6 py-8 text-center text-slate-500">No general inquiries yet.</td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
