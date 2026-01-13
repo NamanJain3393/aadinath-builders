@@ -24,8 +24,8 @@ const Footer = () => {
                     <div>
                         <h3 className="text-lg font-bold mb-4">Contact</h3>
                         <ul className="space-y-2 text-sm text-slate-400">
-                            <li>Phone: +91 9756970500, +91 7248643393</li>
-                            <li>Email: info@aadinathbuilders.com</li>
+                            <li>Phone: +91 9756970500, +91 7248643393, +916395675559</li>
+                            <li>Email: infoaadinathbuilders@gmail.com</li>
                             <li>Address: Indra Udhyan Marg, Vikas Nagar, Dehradun</li>
                         </ul>
                     </div>
