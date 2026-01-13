@@ -61,7 +61,7 @@ const AdminDashboard = () => {
 
             // Fetch Visit Count
             try {
-                const visitRes = await axios.get('/api/visits/count');
+                const visitRes = await axios.get('/api/visits', config);
                 setVisitCount(visitRes.data.count);
             } catch (error) {
                 console.error('Error fetching visits:', error);
