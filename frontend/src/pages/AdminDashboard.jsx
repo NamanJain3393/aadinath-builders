@@ -155,13 +155,12 @@ const AdminDashboard = () => {
 
             // Append the new image URL to the current list
             const currentImages = propertyForm.images || '';
-            // If currentImages is empty string, just set data. If not, comma append.
-            // Also handle if it ends with comma
+            // If currentImages is empty string, just set data.filePath. If not, comma append.
             let newImages = currentImages.trim();
             if (newImages && !newImages.endsWith(',')) {
                 newImages += ', ';
             }
-            newImages += data;
+            newImages += data.filePath; // Fix: Use data.filePath, not data object
 
             setPropertyForm({ ...propertyForm, images: newImages });
             setUploading(false);
