@@ -32,7 +32,44 @@ const AdminDashboard = () => {
         carpetArea: '', superArea: '', propertyAge: 'New Launch', facing: '', project: '', amenities: [], videoUrl: ''
     });
 
-    // ... (keep useEffect) ...
+    useEffect(() => {
+        if (!userInfo || !userInfo.isAdmin) {
+            navigate('/login');
+            return;
+        }
+
+        const fetchAdminData = async () => {
+            const config = { headers: { Authorization: `Bearer ${userInfo.token}` } };
+
+            // Fetch Properties
+            try {
+                const propsRes = await axios.get('/api/properties');
+                setProperties(propsRes.data.properties);
+            } catch (error) {
+                console.error('Error fetching properties:', error);
+                // Don't show toast for properties to avoid clutter if other things fail
+            }
+
+            // Fetch Inquiries
+            try {
+                const inqRes = await axios.get('/api/inquiries', config);
+                setInquiries(inqRes.data);
+            } catch (error) {
+                console.error('Error fetching inquiries:', error);
+                // toast.error('Failed to load inquiries');
+            }
+
+            // Fetch Visit Count
+            try {
+                const visitRes = await axios.get('/api/visits/count');
+                setVisitCount(visitRes.data.count);
+            } catch (error) {
+                console.error('Error fetching visits:', error);
+            }
+        };
+
+        fetchAdminData();
+    }, [navigate]);
 
     const handleSaveProperty = async (e) => {
         e.preventDefault();
