@@ -2,7 +2,21 @@ import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import { Building2, Home, MapPin, Search } from 'lucide-react';
 
+import { useEffect } from 'react';
+import axios from '@/api/axios';
+
 const HomePage = () => {
+    useEffect(() => {
+        const incrementVisit = async () => {
+            try {
+                await axios.post('/api/visits');
+            } catch (error) {
+                console.error('Failed to track visit', error);
+            }
+        };
+        incrementVisit();
+    }, []);
+
     return (
         <div className="flex flex-col min-h-screen">
             {/* Hero Section */}

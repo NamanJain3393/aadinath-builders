@@ -21,6 +21,7 @@ const AdminDashboard = () => {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingProperty, setEditingProperty] = useState(null);
     const [uploading, setUploading] = useState(false);
+    const [visitCount, setVisitCount] = useState(0);
 
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
 
@@ -43,6 +44,9 @@ const AdminDashboard = () => {
 
                 const inqRes = await axios.get('/api/inquiries', config);
                 setInquiries(inqRes.data);
+
+                const visitRes = await axios.get('/api/visits', config);
+                setVisitCount(visitRes.data.count);
             } catch (error) {
                 console.error(error);
                 if (error.response?.status === 401) {
@@ -166,6 +170,11 @@ const AdminDashboard = () => {
                     >
                         Inquiries
                     </Button>
+                </div>
+
+                <div className="mb-8 p-4 bg-white border rounded-lg shadow-sm w-fit">
+                    <h3 className="text-sm font-medium text-slate-500 uppercase">Total Website Visits</h3>
+                    <p className="text-3xl font-bold text-slate-900">{visitCount}</p>
                 </div>
 
                 {activeTab === 'properties' && (
