@@ -1,24 +1,18 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendInquiryEmail = async (inquiryData, propertyTitle = 'General Inquiry') => {
     try {
         const { name, email, phone, message } = inquiryData;
 
-        // Create a transporter using explicit SMTP settings
-        // This often works better on cloud platforms like Render
-        const transporter = nodemailer.createTransport({
-            host: 'smtp.gmail.com',
-            port: 465,
-            secure: true, // Use SSL
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
+        // On Resend's free tier, you can only send TO the email you signed up with
+        // Unless you verify a domain.
+        const adminEmail = process.env.ADMIN_EMAIL || 'infoaadinathbuilders@gmail.com';
 
-        const mailOptions = {
-            from: `"Aadinath Builders Website" <${process.env.EMAIL_USER}>`,
-            to: process.env.ADMIN_EMAIL || process.env.EMAIL_USER,
+        const { data, error } = await resend.emails.send({
+            from: 'Aadinath Builders <onboarding@resend.dev>', // Resend default for unverified domains
+            to: adminEmail,
             subject: `New Inquiry: ${propertyTitle}`,
             html: `
                 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">
@@ -31,19 +25,19 @@ const sendInquiryEmail = async (inquiryData, propertyTitle = 'General Inquiry') 
                         <p><strong>Message:</strong></p>
                         <p>${message}</p>
                     </div>
-                    <p style="font-size: 12px; color: #666; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
-                        This inquiry was submitted via the Aadinath Builders website contact form.
-                    </p>
                 </div>
             `,
-        };
+        });
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent: %s', info.messageId);
-        return info;
+        if (error) {
+            console.error('Resend error:', error);
+            return null;
+        }
+
+        console.log('Email sent successfully via Resend:', data.id);
+        return data;
     } catch (error) {
         console.error('Email service error:', error);
-        // We don't throw here to avoid failing the inquiry save if email fails
         return null;
     }
 };
