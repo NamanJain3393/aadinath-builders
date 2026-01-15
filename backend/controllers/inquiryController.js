@@ -1,4 +1,6 @@
 const Inquiry = require('../models/Inquiry');
+const Property = require('../models/Property');
+const { sendInquiryEmail } = require('../utils/emailService');
 
 // @desc    Create new inquiry
 // @route   POST /api/inquiries
@@ -16,6 +18,19 @@ const createInquiry = async (req, res) => {
         });
 
         const createdInquiry = await inquiry.save();
+
+        // Get property title for the email if it's a property inquiry
+        let propertyTitle = 'General Inquiry';
+        if (propertyId) {
+            const property = await Property.findById(propertyId);
+            if (property) {
+                propertyTitle = `Property: ${property.title}`;
+            }
+        }
+
+        // Send Email Notification asynchronously
+        sendInquiryEmail(createdInquiry, propertyTitle);
+
         res.status(201).json(createdInquiry);
     } catch (error) {
         console.error('Error creating inquiry:', error);
