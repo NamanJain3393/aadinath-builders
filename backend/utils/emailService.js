@@ -4,9 +4,12 @@ const sendInquiryEmail = async (inquiryData, propertyTitle = 'General Inquiry') 
     try {
         const { name, email, phone, message } = inquiryData;
 
-        // Create a transporter using SMTP
+        // Create a transporter using explicit SMTP settings
+        // This often works better on cloud platforms like Render
         const transporter = nodemailer.createTransport({
-            service: process.env.EMAIL_SERVICE || 'gmail',
+            host: 'smtp.gmail.com',
+            port: 465,
+            secure: true, // Use SSL
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS,
